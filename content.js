@@ -69,7 +69,8 @@ async function injectToggleText() {
   if (document.querySelector(".blur-toggle-wrapper")) return;
 
   const historyEl = document.querySelector("#history");
-  if (!historyEl || !historyEl.parentElement) return;
+  const asideEl = document.querySelector("aside");
+  if (!historyEl || !historyEl.parentElement || !asideEl) return;
 
   const wrapper = document.createElement("button");
   wrapper.className = "blur-toggle-wrapper text-token-text-tertiary";
@@ -104,6 +105,25 @@ async function injectToggleText() {
 
   wrapper.appendChild(toggle);
   historyEl.parentElement.insertBefore(wrapper, historyEl);
+
+  let isInAside = false;
+  const scrollport = document.querySelector("[role='region'][data-testid='scrollport']") || historyEl.closest(".overflow-y-auto") || document.querySelector(".flex-col.flex-1.overflow-hidden");
+  
+  if (scrollport) {
+    scrollport.addEventListener("scroll", () => {
+      const scrolled = scrollport.scrollTop > 150;
+      
+      if (scrolled && !isInAside) {
+        wrapper.remove();
+        asideEl.appendChild(wrapper);
+        isInAside = true;
+      } else if (!scrolled && isInAside) {
+        wrapper.remove();
+        historyEl.parentElement.insertBefore(wrapper, historyEl);
+        isInAside = false;
+      }
+    });
+  }
 }
 
 let injectTimeout;
