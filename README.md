@@ -2,7 +2,7 @@
 
 A Chrome extension that blurs your ChatGPT chat history for privacy. Toggle blur on/off with a single click.
 
-![ChatGPT History Blur Extension Preview](https://i.imgur.com/qnzsYGA.png)
+![ChatGPT History Blur Extension Preview](https://i.imgur.com/vLlzlbu.png)
 
 ## Features
 - Blur chat history titles by default
