@@ -132,10 +132,14 @@ const observer = new MutationObserver(() => {
   injectTimeout = setTimeout(() => {
     injectToggleText();
     applyBlur();
-  }, 100);
+  }, 300);
 });
 
-observer.observe(document.body, { childList: true, subtree: true });
+const historyEl = document.querySelector("#stage-slideover-sidebar");
+if (historyEl) {
+  observer.observe(historyEl, { childList: true, subtree: true });
+}
+
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === 'local' && changes.selected_language) {
