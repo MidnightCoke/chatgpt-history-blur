@@ -21,9 +21,14 @@ const storage = {
 
   async getValue(key, defaultValue = true) {
     try {
-      const res = await new Promise(r =>
-        chrome.storage.local.get([key], r)
-      );
+      if (!chrome.runtime?.id) return defaultValue;
+      const res = await new Promise((resolve, reject) => {
+        try {
+          chrome.storage.local.get([key], resolve);
+        } catch (e) {
+          reject(e);
+        }
+      });
       return res?.[key] !== false;
     } catch {
       return defaultValue;
@@ -31,6 +36,11 @@ const storage = {
   },
 
   setValue(key, value) {
-    chrome.storage.local.set({ [key]: value });
+    try {
+      if (!chrome.runtime?.id) return;
+      chrome.storage.local.set({ [key]: value });
+    } catch {
+      // Extension context invalidated
+    }
   }
 };

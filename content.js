@@ -42,7 +42,6 @@ async function applyBlur() {
 
   document.querySelectorAll("#history > a").forEach((item) => {
     setItemBlur(item, enabled);
-    item.dataset.blurEnabled = enabled ? "true" : "false";
 
     if (item.dataset.blurListenerAttached) return;
     item.dataset.blurListenerAttached = "true";
@@ -60,37 +59,10 @@ async function applyBlur() {
       setItemBlur(item, isBlurEnabled);
     });
   });
-}
 
-let scrollListenerAttached = false;
-let isInAside = false;
-
-function attachScrollListener(wrapper, historyEl, asideEl) {
-  if (scrollListenerAttached) return;
-
-  const scrollport = document.querySelector("[role='region'][data-testid='scrollport']") || historyEl.closest(".overflow-y-auto") || document.querySelector(".flex-col.flex-1.overflow-hidden");
-  if (!scrollport) return;
-
-  scrollport.addEventListener("scroll", () => {
-    const currentWrapper = document.querySelector(".blur-toggle-wrapper");
-    const currentHistory = document.querySelector("#history");
-    const currentAside = document.querySelector("aside");
-    if (!currentWrapper || !currentHistory || !currentAside) return;
-
-    const scrolled = scrollport.scrollTop > 150;
-
-    if (scrolled && !isInAside) {
-      currentWrapper.remove();
-      currentAside.appendChild(currentWrapper);
-      isInAside = true;
-    } else if (!scrolled && isInAside) {
-      currentWrapper.remove();
-      currentHistory.parentElement.insertBefore(currentWrapper, currentHistory);
-      isInAside = false;
-    }
+  document.querySelectorAll("#history > a").forEach((item) => {
+    item.dataset.blurEnabled = enabled ? "true" : "false";
   });
-
-  scrollListenerAttached = true;
 }
 
 async function injectToggleText() {
@@ -133,9 +105,25 @@ async function injectToggleText() {
 
   wrapper.appendChild(toggle);
   historyEl.parentElement.insertBefore(wrapper, historyEl);
-  isInAside = false;
 
-  attachScrollListener(wrapper, historyEl, asideEl);
+  let isInAside = false;
+  const scrollport = document.querySelector("[role='region'][data-testid='scrollport']") || historyEl.closest(".overflow-y-auto") || document.querySelector(".flex-col.flex-1.overflow-hidden");
+  
+  if (scrollport) {
+    scrollport.addEventListener("scroll", () => {
+      const scrolled = scrollport.scrollTop > 150;
+      
+      if (scrolled && !isInAside) {
+        wrapper.remove();
+        asideEl.appendChild(wrapper);
+        isInAside = true;
+      } else if (!scrolled && isInAside) {
+        wrapper.remove();
+        historyEl.parentElement.insertBefore(wrapper, historyEl);
+        isInAside = false;
+      }
+    });
+  }
 }
 
 let injectTimeout;
@@ -147,11 +135,7 @@ const observer = new MutationObserver(() => {
   }, 300);
 });
 
-const historyEl = document.querySelector("#stage-slideover-sidebar");
-if (historyEl) {
-  observer.observe(historyEl, { childList: true, subtree: true });
-}
-
+observer.observe(document.body, { childList: true, subtree: true });
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === 'local' && changes.selected_language) {
