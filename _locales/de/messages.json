@@ -22,5 +22,9 @@
   "showPinnedChats": {
     "message": "Angeheftete Chats anzeigen",
     "description": "Label for show pinned chats toggle in popup"
+  },
+  "blurAmount": {
+    "message": "Unschärfestärke",
+    "description": "Label for blur amount slider in popup"
   }
 }

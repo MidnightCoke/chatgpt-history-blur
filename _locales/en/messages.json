@@ -22,5 +22,9 @@
   "showPinnedChats": {
     "message": "Show pinned chats",
     "description": "Label for show pinned chats toggle in popup"
+  },
+  "blurAmount": {
+    "message": "Blur amount",
+    "description": "Label for blur amount slider in popup"
   }
 }

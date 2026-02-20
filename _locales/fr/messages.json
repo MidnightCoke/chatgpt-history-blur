@@ -22,5 +22,9 @@
   "showPinnedChats": {
     "message": "Afficher les chats épinglés",
     "description": "Label for show pinned chats toggle in popup"
+  },
+  "blurAmount": {
+    "message": "Niveau de flou",
+    "description": "Label for blur amount slider in popup"
   }
 }

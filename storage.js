@@ -2,6 +2,7 @@ const BLUR_KEY_SETTINGS = "blur_settings";
 const BLUR_KEY_CURRENT = "current_blur_state";
 const LANGUAGE_KEY = "selected_language";
 const SHOW_PINNED_KEY = "show_pinned_chats";
+const BLUR_AMOUNT_KEY = "blur_amount";
 
 const storage = {
   async getBlurSettings() {
@@ -26,6 +27,26 @@ const storage = {
 
   setShowPinned(value) {
     this.setValue(SHOW_PINNED_KEY, value);
+  },
+
+  async getBlurAmount() {
+    try {
+      if (!chrome.runtime?.id) return 3.5;
+      const res = await new Promise((resolve, reject) => {
+        try {
+          chrome.storage.local.get([BLUR_AMOUNT_KEY], resolve);
+        } catch (e) {
+          reject(e);
+        }
+      });
+      return res?.[BLUR_AMOUNT_KEY] ?? 3.5;
+    } catch {
+      return 3.5;
+    }
+  },
+
+  setBlurAmount(value) {
+    this.setValue(BLUR_AMOUNT_KEY, value);
   },
 
   async getValue(key, defaultValue = true) {

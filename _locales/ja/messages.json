@@ -22,5 +22,9 @@
   "showPinnedChats": {
     "message": "ピン留めしたチャットを表示",
     "description": "Label for show pinned chats toggle in popup"
+  },
+  "blurAmount": {
+    "message": "ぼかし量",
+    "description": "Label for blur amount slider in popup"
   }
 }

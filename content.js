@@ -2,10 +2,10 @@ function isContextValid() {
   return !!chrome.runtime?.id;
 }
 
-function setItemBlur(item, enabled, showPinned) {
+function setItemBlur(item, enabled, showPinned, blurAmount) {
   const isActive = item.hasAttribute("data-active");
   const isPinned = showPinned && item.getAttribute("draggable") === "false";
-  item.style.filter = (!enabled || isActive || isPinned) ? "none" : "blur(3.2px)";
+  item.style.filter = (!enabled || isActive || isPinned) ? "none" : `blur(${blurAmount}px)`;
 }
 
 let translations = {};
@@ -52,9 +52,10 @@ async function getTranslation(key) {
 async function applyBlur() {
   const enabled = await storage.getBlurState();
   const showPinned = await storage.getShowPinned();
+  const blurAmount = await storage.getBlurAmount();
 
   document.querySelectorAll("#history > a").forEach((item) => {
-    setItemBlur(item, enabled, showPinned);
+    setItemBlur(item, enabled, showPinned, blurAmount);
 
     if (item.dataset.blurListenerAttached) return;
     item.dataset.blurListenerAttached = "true";
@@ -70,13 +71,15 @@ async function applyBlur() {
     item.addEventListener("mouseleave", () => {
       const isBlurEnabled = item.dataset.blurEnabled === "true";
       const isPinnedShown = item.dataset.showPinned === "true";
-      setItemBlur(item, isBlurEnabled, isPinnedShown);
+      const amount = parseFloat(item.dataset.blurAmount) || 3.5;
+      setItemBlur(item, isBlurEnabled, isPinnedShown, amount);
     });
   });
 
   document.querySelectorAll("#history > a").forEach((item) => {
     item.dataset.blurEnabled = enabled ? "true" : "false";
     item.dataset.showPinned = showPinned ? "true" : "false";
+    item.dataset.blurAmount = blurAmount;
   });
 }
 
@@ -155,7 +158,13 @@ observer.observe(document.body, { childList: true, subtree: true });
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (!isContextValid()) return;
-  if (areaName === 'local' && changes.selected_language) {
+  if (areaName !== 'local') return;
+
+  if (changes.blur_amount || changes.show_pinned_chats || changes.blur_settings) {
+    applyBlur();
+  }
+
+  if (changes.selected_language) {
     const toggleEl = document.querySelector(".blur-toggle-text");
     if (toggleEl) {
       getTranslation("showChats").then(showText => {
