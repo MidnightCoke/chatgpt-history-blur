@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <style>
       body {
         font-family: sans-serif;
@@ -27,6 +27,7 @@
         display: flex;
         align-items: center;
         gap: 8px;
+        margin-bottom: 16px;
       }
 
       #languageSelect {
@@ -39,12 +40,8 @@
     </style>
   </head>
   <body>
-    <div class="box">
-      <span id="popupLabel">Blur ChatGPT History </span>
-      <input type="checkbox" id="toggle" />
-    </div>
     <div class="language-box">
-      <label for="languageSelect" style="font-size: 12px;">Language:</label>
+      <label for="languageSelect" style="font-size: 12px">Language:</label>
       <select id="languageSelect">
         <option value="en">English</option>
         <option value="es">Español</option>
@@ -55,6 +52,15 @@
         <option value="tr">Türkçe</option>
       </select>
     </div>
+    <div class="box">
+      <span id="popupLabel">Blur ChatGPT History </span>
+      <input type="checkbox" id="toggle" />
+    </div>
+    <div class="box">
+      <span id="pinnedLabel">Show pinned chats</span>
+      <input type="checkbox" id="pinnedToggle" />
+    </div>
+
     <script src="popup.js"></script>
   </body>
 </html>

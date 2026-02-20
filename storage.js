@@ -1,6 +1,7 @@
 const BLUR_KEY_SETTINGS = "blur_settings";
 const BLUR_KEY_CURRENT = "current_blur_state";
 const LANGUAGE_KEY = "selected_language";
+const SHOW_PINNED_KEY = "show_pinned_chats";
 
 const storage = {
   async getBlurSettings() {
@@ -17,6 +18,14 @@ const storage = {
 
   setBlurState(value) {
     this.setValue(BLUR_KEY_CURRENT, value);
+  },
+
+  async getShowPinned() {
+    return this.getValue(SHOW_PINNED_KEY, true);
+  },
+
+  setShowPinned(value) {
+    this.setValue(SHOW_PINNED_KEY, value);
   },
 
   async getValue(key, defaultValue = true) {

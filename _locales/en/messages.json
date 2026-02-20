@@ -18,5 +18,9 @@
   "blurToggle": {
     "message": "Blur ChatGPT History",
     "description": "Label for blur toggle in popup"
+  },
+  "showPinnedChats": {
+    "message": "Show pinned chats",
+    "description": "Label for show pinned chats toggle in popup"
   }
 }

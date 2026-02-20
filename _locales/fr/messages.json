@@ -18,5 +18,9 @@
   "blurToggle": {
     "message": "Flou de l'Historique ChatGPT",
     "description": "Label for blur toggle in popup"
+  },
+  "showPinnedChats": {
+    "message": "Afficher les chats épinglés",
+    "description": "Label for show pinned chats toggle in popup"
   }
 }

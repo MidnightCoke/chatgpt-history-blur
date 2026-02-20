@@ -18,5 +18,9 @@
   "blurToggle": {
     "message": "ChatGPT历史记录模糊",
     "description": "Label for blur toggle in popup"
+  },
+  "showPinnedChats": {
+    "message": "显示置顶聊天",
+    "description": "Label for show pinned chats toggle in popup"
   }
 }

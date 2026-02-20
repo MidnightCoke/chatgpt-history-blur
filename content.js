@@ -1,47 +1,60 @@
-function setItemBlur(item, enabled) {
+function isContextValid() {
+  return !!chrome.runtime?.id;
+}
+
+function setItemBlur(item, enabled, showPinned) {
   const isActive = item.hasAttribute("data-active");
-  item.style.filter = (!enabled || isActive) ? "none" : "blur(3.2px)";
+  const isPinned = showPinned && item.getAttribute("draggable") === "false";
+  item.style.filter = (!enabled || isActive || isPinned) ? "none" : "blur(3.2px)";
 }
 
 let translations = {};
 
 async function getTranslation(key) {
-  return new Promise(async (resolve) => {
-    chrome.storage.local.get(["selected_language"], async (res) => {
-      const language = res.selected_language || chrome.i18n.getUILanguage().split('-')[0];
-      
-      if (!translations[language]) {
+  try {
+    const res = await new Promise((resolve, reject) => {
+      try {
+        chrome.storage.local.get(["selected_language"], resolve);
+      } catch (e) {
+        reject(e);
+      }
+    });
+
+    const language = res.selected_language || chrome.i18n.getUILanguage().split('-')[0];
+
+    if (!translations[language]) {
+      try {
+        const url = chrome.runtime.getURL(`_locales/${language}/messages.json`);
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Failed to load: ${response.status}`);
+        }
+        translations[language] = await response.json();
+      } catch (e) {
+        console.warn(`Could not load language ${language}, falling back to English`, e);
         try {
-          const url = chrome.runtime.getURL(`_locales/${language}/messages.json`);
+          const url = chrome.runtime.getURL(`_locales/en/messages.json`);
           const response = await fetch(url);
-          if (!response.ok) {
-            throw new Error(`Failed to load: ${response.status}`);
-          }
           translations[language] = await response.json();
-        } catch (e) {
-          console.warn(`Could not load language ${language}, falling back to English`, e);
-          try {
-            const url = chrome.runtime.getURL(`_locales/en/messages.json`);
-            const response = await fetch(url);
-            translations[language] = await response.json();
-          } catch (fallbackError) {
-            console.error("Failed to load English fallback", fallbackError);
-            resolve(key);
-            return;
-          }
+        } catch (fallbackError) {
+          console.error("Failed to load English fallback", fallbackError);
+          return key;
         }
       }
-      
-      resolve(translations[language][key]?.message || key);
-    });
-  });
+    }
+
+    return translations[language][key]?.message || key;
+  } catch {
+    return key;
+  }
 }
 
 async function applyBlur() {
   const enabled = await storage.getBlurState();
+  const showPinned = await storage.getShowPinned();
 
   document.querySelectorAll("#history > a").forEach((item) => {
-    setItemBlur(item, enabled);
+    setItemBlur(item, enabled, showPinned);
 
     if (item.dataset.blurListenerAttached) return;
     item.dataset.blurListenerAttached = "true";
@@ -56,12 +69,14 @@ async function applyBlur() {
 
     item.addEventListener("mouseleave", () => {
       const isBlurEnabled = item.dataset.blurEnabled === "true";
-      setItemBlur(item, isBlurEnabled);
+      const isPinnedShown = item.dataset.showPinned === "true";
+      setItemBlur(item, isBlurEnabled, isPinnedShown);
     });
   });
 
   document.querySelectorAll("#history > a").forEach((item) => {
     item.dataset.blurEnabled = enabled ? "true" : "false";
+    item.dataset.showPinned = showPinned ? "true" : "false";
   });
 }
 
@@ -128,6 +143,7 @@ async function injectToggleText() {
 
 let injectTimeout;
 const observer = new MutationObserver(() => {
+  if (!isContextValid()) { observer.disconnect(); return; }
   clearTimeout(injectTimeout);
   injectTimeout = setTimeout(() => {
     injectToggleText();
@@ -138,6 +154,7 @@ const observer = new MutationObserver(() => {
 observer.observe(document.body, { childList: true, subtree: true });
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (!isContextValid()) return;
   if (areaName === 'local' && changes.selected_language) {
     const toggleEl = document.querySelector(".blur-toggle-text");
     if (toggleEl) {
@@ -151,10 +168,12 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   }
 });
 
-initBlurState().then(() => {
-  injectToggleText();
-  applyBlur();
-});
+if (isContextValid()) {
+  initBlurState().then(() => {
+    injectToggleText();
+    applyBlur();
+  });
+}
 
 async function initBlurState() {
   const initial = await storage.getBlurSettings();

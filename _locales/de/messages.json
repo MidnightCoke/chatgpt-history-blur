@@ -18,5 +18,9 @@
   "blurToggle": {
     "message": "ChatGPT Verlauf Unschärfe",
     "description": "Label for blur toggle in popup"
+  },
+  "showPinnedChats": {
+    "message": "Angeheftete Chats anzeigen",
+    "description": "Label for show pinned chats toggle in popup"
   }
 }

@@ -18,5 +18,9 @@
   "blurToggle": {
     "message": "ChatGPT履歴ぼかし",
     "description": "Label for blur toggle in popup"
+  },
+  "showPinnedChats": {
+    "message": "ピン留めしたチャットを表示",
+    "description": "Label for show pinned chats toggle in popup"
   }
 }
