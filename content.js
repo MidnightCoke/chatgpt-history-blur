@@ -3,7 +3,7 @@ function isContextValid() {
 }
 
 function setItemBlur(item, enabled, showPinned, blurAmount) {
-  const isActive = item.hasAttribute("data-active");
+  const isActive = item.getAttribute("aria-current") === "page";
   const isPinned = showPinned && item.getAttribute("draggable") === "false";
   item.style.filter =
     !enabled || isActive || isPinned ? "none" : `blur(${blurAmount}px)`;
@@ -59,7 +59,7 @@ async function applyBlur() {
   const showPinned = await storage.getShowPinned();
   const blurAmount = await storage.getBlurAmount();
 
-  document.querySelectorAll("#history > a").forEach((item) => {
+  document.querySelectorAll('#history a[href^="/c/"]').forEach((item) => {
     setItemBlur(item, enabled, showPinned, blurAmount);
 
     if (item.dataset.blurListenerAttached) return;
@@ -68,7 +68,7 @@ async function applyBlur() {
 
     item.addEventListener("mouseenter", () => {
       const isBlurEnabled = item.dataset.blurEnabled === "true";
-      if (isBlurEnabled && !item.hasAttribute("data-active")) {
+      if (isBlurEnabled && item.getAttribute("aria-current") !== "page") {
         item.style.filter = "none";
       }
     });
@@ -81,7 +81,7 @@ async function applyBlur() {
     });
   });
 
-  document.querySelectorAll("#history > a").forEach((item) => {
+  document.querySelectorAll('#history a[href^="/c/"]').forEach((item) => {
     item.dataset.blurEnabled = enabled ? "true" : "false";
     item.dataset.showPinned = showPinned ? "true" : "false";
     item.dataset.blurAmount = blurAmount;
