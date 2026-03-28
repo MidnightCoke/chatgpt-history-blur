@@ -24,6 +24,11 @@ A Chrome extension that blurs your ChatGPT chat history for privacy. Toggle blur
 - Hover over chat titles to temporarily reveal them
 - Click the extension popup for default mode
 
+## Release Automation
+
+GitHub Actions publishing for the Chrome Web Store is documented in [.github/PUBLISHING.md](.github/PUBLISHING.md).
+The workflow packages the extension on demand and can auto-publish when you push a version tag such as `v1.1.1`.
+
 
 ## Privacy
 This extension provides **visual privacy only** - not encryption. Your data is processed locally in your browser.
