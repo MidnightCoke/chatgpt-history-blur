@@ -5,7 +5,8 @@ function isContextValid() {
 function setItemBlur(item, enabled, showPinned, blurAmount) {
   const isActive = item.hasAttribute("data-active");
   const isPinned = showPinned && item.getAttribute("draggable") === "false";
-  item.style.filter = (!enabled || isActive || isPinned) ? "none" : `blur(${blurAmount}px)`;
+  item.style.filter =
+    !enabled || isActive || isPinned ? "none" : `blur(${blurAmount}px)`;
 }
 
 let translations = {};
@@ -20,7 +21,8 @@ async function getTranslation(key) {
       }
     });
 
-    const language = res.selected_language || chrome.i18n.getUILanguage().split('-')[0];
+    const language =
+      res.selected_language || chrome.i18n.getUILanguage().split("-")[0];
 
     if (!translations[language]) {
       try {
@@ -31,7 +33,10 @@ async function getTranslation(key) {
         }
         translations[language] = await response.json();
       } catch (e) {
-        console.warn(`Could not load language ${language}, falling back to English`, e);
+        console.warn(
+          `Could not load language ${language}, falling back to English`,
+          e,
+        );
         try {
           const url = chrome.runtime.getURL(`_locales/en/messages.json`);
           const response = await fetch(url);
@@ -92,11 +97,13 @@ async function injectToggleText() {
 
   const wrapper = document.createElement("button");
   wrapper.className = "blur-toggle-wrapper text-token-text-tertiary";
-  wrapper.style.cssText = "display: flex; align-items: center; justify-content: flex-start; gap: 2px; width: 100%; padding-left: 1rem; padding-right: 1rem; padding-top: 0.375rem; padding-bottom: 0.375rem; border: none; background: none; cursor: pointer;";
+  wrapper.style.cssText =
+    "display: flex; align-items: center; justify-content: flex-start; gap: 2px; width: 100%; padding-left: 1rem; padding-right: 1rem; padding-top: 0.375rem; padding-bottom: 0.375rem; border: none; background: none; cursor: pointer;";
 
   const toggle = document.createElement("span");
   toggle.className = "blur-toggle-text";
-  toggle.style.cssText = "cursor: pointer; user-select: none; font-weight: bold; font-size: 1.5rem;";
+  toggle.style.cssText =
+    "cursor: pointer; user-select: none; font-weight: bold; font-size: 1.5rem;";
 
   let currentState = await storage.getBlurState();
   const showText = await getTranslation("showChats");
@@ -125,12 +132,15 @@ async function injectToggleText() {
   historyEl.parentElement.insertBefore(wrapper, historyEl);
 
   let isInAside = false;
-  const scrollport = document.querySelector("[role='region'][data-testid='scrollport']") || historyEl.closest(".overflow-y-auto") || document.querySelector(".flex-col.flex-1.overflow-hidden");
-  
+  const scrollport =
+    document.querySelector("[role='region'][data-testid='scrollport']") ||
+    historyEl.closest(".overflow-y-auto") ||
+    document.querySelector(".flex-col.flex-1.overflow-hidden");
+
   if (scrollport) {
     scrollport.addEventListener("scroll", () => {
       const scrolled = scrollport.scrollTop > 150;
-      
+
       if (scrolled && !isInAside) {
         wrapper.remove();
         asideEl.appendChild(wrapper);
@@ -146,7 +156,10 @@ async function injectToggleText() {
 
 let injectTimeout;
 const observer = new MutationObserver(() => {
-  if (!isContextValid()) { observer.disconnect(); return; }
+  if (!isContextValid()) {
+    observer.disconnect();
+    return;
+  }
   clearTimeout(injectTimeout);
   injectTimeout = setTimeout(() => {
     injectToggleText();
@@ -158,18 +171,24 @@ observer.observe(document.body, { childList: true, subtree: true });
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (!isContextValid()) return;
-  if (areaName !== 'local') return;
+  if (areaName !== "local") return;
 
-  if (changes.blur_amount || changes.show_pinned_chats || changes.blur_settings) {
+  if (
+    changes.blur_amount ||
+    changes.show_pinned_chats ||
+    changes.blur_settings
+  ) {
     applyBlur();
   }
 
   if (changes.selected_language) {
     const toggleEl = document.querySelector(".blur-toggle-text");
     if (toggleEl) {
-      getTranslation("showChats").then(showText => {
-        getTranslation("hideChats").then(hideText => {
-          const currentState = toggleEl.textContent === showText || toggleEl.textContent === "Show chats";
+      getTranslation("showChats").then((showText) => {
+        getTranslation("hideChats").then((hideText) => {
+          const currentState =
+            toggleEl.textContent === showText ||
+            toggleEl.textContent === "Show chats";
           toggleEl.textContent = currentState ? showText : hideText;
         });
       });
