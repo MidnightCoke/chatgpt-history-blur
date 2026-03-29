@@ -29,17 +29,16 @@ If version `1.1.0` is already published for this extension, automation should ta
 ## How the workflow runs
 
 - `workflow_dispatch`: packages the extension and uploads a zip artifact. If you set `publish` to `true`, it also submits the package to the Chrome Web Store.
-- `push` on tag `v*`: packages the extension and publishes it automatically.
+- `push` on `master`: packages the extension on every push. It only publishes when the `manifest.json` version changed compared to the previous commit.
 
-The workflow fails if the Git tag version does not match the version in `manifest.json`.
+This prevents accidental failed publish attempts from normal code pushes without a version bump.
 
 ## Release process
 
 1. Update the version in `manifest.json` to a value higher than the currently published version. If `1.1.0` is live, use something like `1.1.1` for the next release.
 2. Commit and push your changes.
-3. Create and push a matching Git tag, for example `v1.1.1`.
-4. Wait for the workflow to upload and publish the new package.
-5. Monitor review status in the Chrome Web Store dashboard.
+3. Wait for the workflow to upload and publish the new package.
+4. Monitor review status in the Chrome Web Store dashboard.
 
 ## Notes
 
