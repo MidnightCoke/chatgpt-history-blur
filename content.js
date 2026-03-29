@@ -3,10 +3,16 @@ function isContextValid() {
 }
 
 function setItemBlur(item, enabled, showPinned, blurAmount) {
-  const isActive = item.getAttribute("aria-current") === "page";
+  const isActive = !!item.closest("[data-active]");
+
+  if (isActive) {
+    item.style.filter = "none";
+    return;
+  }
+
   const isPinned = showPinned && item.getAttribute("draggable") === "false";
-  item.style.filter =
-    !enabled || isActive || isPinned ? "none" : `blur(${blurAmount}px)`;
+
+  item.style.filter = !enabled || isPinned ? "none" : `blur(${blurAmount}px)`;
 }
 
 let translations = {};
@@ -68,7 +74,9 @@ async function applyBlur() {
 
     item.addEventListener("mouseenter", () => {
       const isBlurEnabled = item.dataset.blurEnabled === "true";
-      if (isBlurEnabled && item.getAttribute("aria-current") !== "page") {
+      const isActive = !!item.closest("[data-active]");
+
+      if (isBlurEnabled && !isActive) {
         item.style.filter = "none";
       }
     });
@@ -88,12 +96,16 @@ async function applyBlur() {
   });
 }
 
+let toggleInjected = false;
+
 async function injectToggleText() {
-  if (document.querySelector(".blur-toggle-wrapper")) return;
+  if (toggleInjected) return;
 
   const historyEl = document.querySelector("#history");
   const asideEl = document.querySelector("aside");
   if (!historyEl || !historyEl.parentElement || !asideEl) return;
+
+  toggleInjected = true;
 
   const wrapper = document.createElement("button");
   wrapper.className = "blur-toggle-wrapper text-token-text-tertiary";
@@ -164,7 +176,7 @@ const observer = new MutationObserver(() => {
   injectTimeout = setTimeout(() => {
     injectToggleText();
     applyBlur();
-  }, 300);
+  }, 200);
 });
 
 observer.observe(document.body, { childList: true, subtree: true });
