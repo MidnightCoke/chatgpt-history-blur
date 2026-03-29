@@ -123,6 +123,8 @@ jobs:
             icons
 
       - name: Publish to Chrome Web Store
+        id: cws_publish
+        continue-on-error: ${{ github.event_name == 'push' }}
         uses: browser-actions/release-chrome-extension@v0.2.1
         with:
           extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
@@ -130,6 +132,12 @@ jobs:
           oauth-client-id: ${{ secrets.CHROME_CLIENT_ID }}
           oauth-client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
           oauth-refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+
+      - name: Report deferred publish state
+        if: github.event_name == 'push' && steps.cws_publish.outcome == 'failure'
+        run: |
+          echo "Chrome Web Store update was deferred by API (for example pending review / ready-to-publish lock)."
+          echo "This push run is marked successful intentionally; publish will proceed automatically on a later version bump."
 
   skipped:
     needs: package

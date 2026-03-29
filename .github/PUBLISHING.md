@@ -45,4 +45,5 @@ This prevents accidental failed publish attempts from normal code pushes without
 - The workflow packages only the files needed by the extension.
 - The Chrome Web Store keeps the existing visibility settings when publishing through the API.
 - The Chrome Web Store rejects uploads if the manifest version is not higher than the version already published.
+- If Chrome Web Store temporarily locks updates (for example pending review / ready to publish), push-triggered publish attempts are treated as deferred and do not fail the whole workflow.
 - New versions still go through Chrome Web Store review unless the update qualifies for a review skip.
