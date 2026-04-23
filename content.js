@@ -2,6 +2,51 @@ function isContextValid() {
   return !!chrome.runtime?.id;
 }
 
+const SELECTORS = {
+  history: "#history",
+  historyItems: '#history a[href^="/c/"]',
+  pinnedIndicators:
+    '[data-testid*="pin"], [aria-label*="Pin"], [aria-label*="Pinned"]',
+  toggleWrapper: ".blur-toggle-wrapper",
+  toggleText: ".blur-toggle-text",
+  toggleScrollSlot: ".blur-toggle-scroll-slot",
+  topMenuList: "ul.m-0.list-none.p-0",
+  chatHistoryNav: "nav[aria-label='Chat history']",
+  scrolledSidebarContainer:
+    "#stage-slideover-sidebar > div > div.opacity-100.motion-safe\\:transition-opacity.motion-safe\\:duration-150.motion-safe\\:ease-linear.h-full.w-\\(--sidebar-width\\).overflow-x-clip.overflow-y-auto.text-clip.whitespace-nowrap.bg-\\(--sidebar-surface-primary\\)",
+  stickySidebarSection:
+    "#stage-slideover-sidebar > div > div.opacity-100.motion-safe\\:transition-opacity.motion-safe\\:duration-150.motion-safe\\:ease-linear.h-full.w-\\(--sidebar-width\\).overflow-x-clip.overflow-y-auto.text-clip.whitespace-nowrap.bg-\\(--sidebar-surface-primary\\) > nav > div.pt-\\(--sidebar-section-first-margin-top\\).last\\:mb-5.bg-\\(--sidebar-surface-primary\\).tall\\:sticky.tall\\:top-header-height.tall\\:z-20.not-tall\\:relative.\\[--sticky-spacer\\:6px\\]",
+  fallbackToggleHosts: ["aside nav", "aside"],
+  fallbackScrollports: [
+    "[role='region'][data-testid='scrollport']",
+    "aside .overflow-y-auto",
+    ".flex-col.flex-1.overflow-hidden",
+  ],
+};
+
+function queryFirst(selectors, root = document) {
+  const selectorList = Array.isArray(selectors) ? selectors : [selectors];
+
+  for (const selector of selectorList) {
+    const element = root.querySelector(selector);
+    if (element) return element;
+  }
+
+  return null;
+}
+
+function queryAll(selector, root = document) {
+  return Array.from(root.querySelectorAll(selector));
+}
+
+function getHistoryElement() {
+  return queryFirst(SELECTORS.history);
+}
+
+function getHistoryItems() {
+  return queryAll(SELECTORS.historyItems);
+}
+
 function setItemBlur(item, enabled, showPinned, blurAmount) {
   const isActive = !!item.closest("[data-active]");
   const isHovered = item.dataset.hovered === "true";
@@ -23,10 +68,7 @@ function isPinnedChatItem(item) {
   const text = row.textContent?.toLowerCase() || "";
 
   return (
-    text.includes("pinned") ||
-    !!row.querySelector(
-      '[data-testid*="pin"], [aria-label*="Pin"], [aria-label*="Pinned"]',
-    )
+    text.includes("pinned") || !!row.querySelector(SELECTORS.pinnedIndicators)
   );
 }
 
@@ -84,7 +126,7 @@ async function applyBlur() {
   const showPinned = await storage.getShowPinned();
   const blurAmount = await storage.getBlurAmount();
 
-  document.querySelectorAll('#history a[href^="/c/"]').forEach((item) => {
+  getHistoryItems().forEach((item) => {
     setItemBlur(item, enabled, showPinned, blurAmount);
 
     if (item.dataset.blurListenerAttached) return;
@@ -111,7 +153,7 @@ async function applyBlur() {
     });
   });
 
-  document.querySelectorAll('#history a[href^="/c/"]').forEach((item) => {
+  getHistoryItems().forEach((item) => {
     item.dataset.blurEnabled = enabled ? "true" : "false";
     item.dataset.showPinned = showPinned ? "true" : "false";
     item.dataset.blurAmount = blurAmount;
@@ -120,18 +162,92 @@ async function applyBlur() {
 }
 
 function getToggleHost() {
-  const historyEl = document.querySelector("#history");
+  const historyEl = getHistoryElement();
   if (historyEl?.parentElement) return historyEl.parentElement;
 
-  return (
-    document.querySelector("aside nav") ||
-    document.querySelector("aside") ||
-    null
-  );
+  return queryFirst(SELECTORS.fallbackToggleHosts);
+}
+
+function getScrolledToggleHost() {
+  return queryFirst([
+    SELECTORS.stickySidebarSection,
+    ...SELECTORS.fallbackToggleHosts,
+  ]);
+}
+
+function getScrolledToggleSlot(host) {
+  if (!host) return null;
+
+  let slot = host.querySelector(SELECTORS.toggleScrollSlot);
+  if (slot) return slot;
+
+  slot = document.createElement("div");
+  slot.className = "blur-toggle-scroll-slot";
+  slot.style.cssText = "width: 100%;";
+
+  const topMenuList = host.querySelector(SELECTORS.topMenuList);
+
+  if (topMenuList?.parentElement === host) {
+    host.insertBefore(slot, topMenuList);
+    return slot;
+  }
+
+  host.insertBefore(slot, host.firstChild);
+  return slot;
+}
+
+function getToggleScrollport() {
+  return queryFirst([
+    SELECTORS.chatHistoryNav,
+    SELECTORS.scrolledSidebarContainer,
+    ...SELECTORS.fallbackScrollports,
+  ]);
+}
+
+function isToggleScrollportScrolled(scrollport) {
+  if (!scrollport) return false;
+
+  if (scrollport.matches(SELECTORS.chatHistoryNav)) {
+    return (
+      scrollport.hasAttribute("data-scrolled-from-top") ||
+      scrollport.scrollTop > 150
+    );
+  }
+
+  return scrollport.scrollTop > 150;
+}
+
+function placeToggleWrapper(wrapper, fallbackHost) {
+  const scrollport = getToggleScrollport();
+  const scrolledHost = getScrolledToggleHost();
+  const scrolledSlot = getScrolledToggleSlot(scrolledHost);
+  const historyEl = getHistoryElement();
+  const isScrolled = isToggleScrollportScrolled(scrollport);
+
+  if (isScrolled && scrolledSlot) {
+    if (wrapper.parentElement !== scrolledSlot) {
+      wrapper.remove();
+      scrolledSlot.appendChild(wrapper);
+    }
+    return;
+  }
+
+  if (historyEl?.parentElement) {
+    if (wrapper.parentElement !== historyEl.parentElement) {
+      wrapper.remove();
+      historyEl.parentElement.insertBefore(wrapper, historyEl);
+    }
+    return;
+  }
+
+  if (fallbackHost && wrapper.parentElement !== fallbackHost) {
+    wrapper.remove();
+    fallbackHost.insertBefore(wrapper, fallbackHost.firstChild);
+  }
 }
 
 async function updateToggleLabel() {
-  const toggleEl = document.querySelector(".blur-toggle-text");
+  const toggleEl = queryFirst(SELECTORS.toggleText);
   if (!toggleEl) return;
 
   const currentState = await storage.getBlurState();
@@ -145,8 +261,8 @@ async function injectToggleText() {
   const host = getToggleHost();
   if (!host) return;
 
-  let wrapper = document.querySelector(".blur-toggle-wrapper");
-  let toggle = document.querySelector(".blur-toggle-text");
+  let wrapper = queryFirst(SELECTORS.toggleWrapper);
+  let toggle = queryFirst(SELECTORS.toggleText);
 
   if (wrapper && !document.contains(wrapper)) {
     wrapper = null;
@@ -209,49 +325,20 @@ async function injectToggleText() {
     });
 
     wrapper.appendChild(toggle);
-    let isInAside = false;
-
-    const scrollport =
-      document.querySelector("[role='region'][data-testid='scrollport']") ||
-      document.querySelector("aside .overflow-y-auto") ||
-      document.querySelector(".flex-col.flex-1.overflow-hidden");
+    const scrollport = getToggleScrollport();
 
     if (scrollport && !scrollport.dataset.blurToggleScrollBound) {
       scrollport.dataset.blurToggleScrollBound = "true";
 
       scrollport.addEventListener("scroll", () => {
-        const historyEl = document.querySelector("#history");
-        const historyHost = historyEl?.parentElement;
-        const asideEl = document.querySelector("aside");
-
-        if (!wrapper || !asideEl || !historyHost) return;
-
-        const scrolled = scrollport.scrollTop > 150;
-
-        if (scrolled && !isInAside) {
-          wrapper.remove();
-          asideEl.prepend(wrapper);
-          isInAside = true;
-        } else if (!scrolled && isInAside) {
-          wrapper.remove();
-          historyHost.insertBefore(wrapper, historyEl);
-          isInAside = false;
-        }
+        const currentWrapper = queryFirst(SELECTORS.toggleWrapper);
+        if (!currentWrapper) return;
+        placeToggleWrapper(currentWrapper, host);
       });
     }
   }
 
-  const historyEl = document.querySelector("#history");
-
-  if (historyEl?.parentElement) {
-    if (wrapper.parentElement !== historyEl.parentElement) {
-      wrapper.remove();
-      historyEl.parentElement.insertBefore(wrapper, historyEl);
-    }
-  } else if (wrapper.parentElement !== host) {
-    wrapper.remove();
-    host.insertBefore(wrapper, host.firstChild);
-  }
+  placeToggleWrapper(wrapper, host);
 
   await updateToggleLabel();
 }

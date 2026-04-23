@@ -11,10 +11,16 @@ const SHOW_PINNED_KEY = "show_pinned_chats";
 const BLUR_AMOUNT_KEY = "blur_amount";
 const LANGUAGE_KEY = "selected_language";
 
-popupLabel.textContent = chrome.i18n.getMessage("blurToggle");
-pinnedLabel.textContent = chrome.i18n.getMessage("showPinnedChats");
+if (popupLabel) {
+  popupLabel.textContent = chrome.i18n.getMessage("blurToggle");
+}
+
+if (pinnedLabel) {
+  pinnedLabel.textContent = chrome.i18n.getMessage("showPinnedChats");
+}
 
 function updateBlurAmountLabel(amount) {
+  if (!blurAmountLabel) return;
   blurAmountLabel.innerHTML = `${chrome.i18n.getMessage("blurAmount")}: <strong>${amount}</strong>px`;
 }
 updateBlurAmountLabel(3.5);
@@ -22,40 +28,56 @@ updateBlurAmountLabel(3.5);
 chrome.storage.local.get([LANGUAGE_KEY], (res) => {
   const savedLanguage =
     res[LANGUAGE_KEY] || chrome.i18n.getUILanguage().split("-")[0];
-  languageSelect.value = savedLanguage;
+  if (languageSelect) {
+    languageSelect.value = savedLanguage;
+  }
   chrome.storage.local.set({ [LANGUAGE_KEY]: savedLanguage });
 });
 
 chrome.storage.local.get([BLUR_KEY_SETTINGS], (res) => {
-  toggle.checked = res[BLUR_KEY_SETTINGS] !== false;
+  if (toggle) {
+    toggle.checked = res[BLUR_KEY_SETTINGS] !== false;
+  }
 });
 
 chrome.storage.local.get([SHOW_PINNED_KEY], (res) => {
-  pinnedToggle.checked = res[SHOW_PINNED_KEY] === true;
+  if (pinnedToggle) {
+    pinnedToggle.checked = res[SHOW_PINNED_KEY] === true;
+  }
 });
 
-toggle.addEventListener("change", () => {
-  chrome.storage.local.set({ [BLUR_KEY_SETTINGS]: toggle.checked });
-});
+if (toggle) {
+  toggle.addEventListener("change", () => {
+    chrome.storage.local.set({ [BLUR_KEY_SETTINGS]: toggle.checked });
+  });
+}
 
-pinnedToggle.addEventListener("change", () => {
-  chrome.storage.local.set({ [SHOW_PINNED_KEY]: pinnedToggle.checked });
-});
+if (pinnedToggle) {
+  pinnedToggle.addEventListener("change", () => {
+    chrome.storage.local.set({ [SHOW_PINNED_KEY]: pinnedToggle.checked });
+  });
+}
 
 chrome.storage.local.get([BLUR_AMOUNT_KEY], (res) => {
   const amount = res[BLUR_AMOUNT_KEY] ?? 3.5;
-  blurAmountSlider.value = amount;
+  if (blurAmountSlider) {
+    blurAmountSlider.value = amount;
+  }
   updateBlurAmountLabel(amount);
 });
 
-blurAmountSlider.addEventListener("input", () => {
-  const amount = parseFloat(blurAmountSlider.value);
-  updateBlurAmountLabel(amount);
-  chrome.storage.local.set({ [BLUR_AMOUNT_KEY]: amount });
-});
+if (blurAmountSlider) {
+  blurAmountSlider.addEventListener("input", () => {
+    const amount = parseFloat(blurAmountSlider.value);
+    updateBlurAmountLabel(amount);
+    chrome.storage.local.set({ [BLUR_AMOUNT_KEY]: amount });
+  });
+}
 
-languageSelect.addEventListener("change", (e) => {
-  const selectedLanguage = e.target.value;
-  chrome.storage.local.set({ [LANGUAGE_KEY]: selectedLanguage });
-  location.reload();
-});
+if (languageSelect) {
+  languageSelect.addEventListener("change", (e) => {
+    const selectedLanguage = e.target.value;
+    chrome.storage.local.set({ [LANGUAGE_KEY]: selectedLanguage });
+    location.reload();
+  });
+}
