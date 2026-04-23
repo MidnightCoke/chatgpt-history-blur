@@ -26,5 +26,25 @@
   "blurAmount": {
     "message": "ぼかし量",
     "description": "Label for blur amount slider in popup"
+  },
+  "popupSubtitle": {
+    "message": "サイドバーのチャット用プライバシー設定",
+    "description": "Subtitle in popup"
+  },
+  "language": {
+    "message": "言語",
+    "description": "Language selector label in popup"
+  },
+  "popupToggleHint": {
+    "message": "ホバーするまでサイドバーのチャットをぼかします",
+    "description": "Hint text for main blur toggle in popup"
+  },
+  "pinnedToggleHint": {
+    "message": "固定したチャットは常に表示します",
+    "description": "Hint text for pinned chats toggle in popup"
+  },
+  "popupFooter": {
+    "message": "変更は自動的に保存されます",
+    "description": "Footer text in popup"
   }
 }

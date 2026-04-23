@@ -20,7 +20,8 @@ function updateBlurAmountLabel(amount) {
 updateBlurAmountLabel(3.5);
 
 chrome.storage.local.get([LANGUAGE_KEY], (res) => {
-  const savedLanguage = res[LANGUAGE_KEY] || chrome.i18n.getUILanguage().split('-')[0];
+  const savedLanguage =
+    res[LANGUAGE_KEY] || chrome.i18n.getUILanguage().split("-")[0];
   languageSelect.value = savedLanguage;
   chrome.storage.local.set({ [LANGUAGE_KEY]: savedLanguage });
 });

@@ -26,5 +26,25 @@
   "blurAmount": {
     "message": "Unschärfestärke",
     "description": "Label for blur amount slider in popup"
+  },
+  "popupSubtitle": {
+    "message": "Datenschutzoptionen für deine Sidebar-Chats",
+    "description": "Subtitle in popup"
+  },
+  "language": {
+    "message": "Sprache",
+    "description": "Language selector label in popup"
+  },
+  "popupToggleHint": {
+    "message": "Verwischt Sidebar-Chats, bis du mit der Maus darüber fährst",
+    "description": "Hint text for main blur toggle in popup"
+  },
+  "pinnedToggleHint": {
+    "message": "Angeheftete Chats immer sichtbar lassen",
+    "description": "Hint text for pinned chats toggle in popup"
+  },
+  "popupFooter": {
+    "message": "Änderungen werden automatisch gespeichert",
+    "description": "Footer text in popup"
   }
 }

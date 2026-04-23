@@ -26,5 +26,25 @@
   "blurAmount": {
     "message": "Blur amount",
     "description": "Label for blur amount slider in popup"
+  },
+  "popupSubtitle": {
+    "message": "Privacy controls for your sidebar chats",
+    "description": "Subtitle in popup"
+  },
+  "language": {
+    "message": "Language",
+    "description": "Language selector label in popup"
+  },
+  "popupToggleHint": {
+    "message": "Blur sidebar chats until you hover them",
+    "description": "Hint text for main blur toggle in popup"
+  },
+  "pinnedToggleHint": {
+    "message": "Keep pinned chats always visible",
+    "description": "Hint text for pinned chats toggle in popup"
+  },
+  "popupFooter": {
+    "message": "Changes are saved automatically",
+    "description": "Footer text in popup"
   }
 }

@@ -26,5 +26,25 @@
   "blurAmount": {
     "message": "Bulanıklık miktarı",
     "description": "Label for blur amount slider in popup"
+  },
+  "popupSubtitle": {
+    "message": "Kenar çubuğu sohbetleriniz için gizlilik denetimleri",
+    "description": "Subtitle in popup"
+  },
+  "language": {
+    "message": "Dil",
+    "description": "Language selector label in popup"
+  },
+  "popupToggleHint": {
+    "message": "Üzerine gelene kadar kenar çubuğu sohbetlerini bulanıklaştırır",
+    "description": "Hint text for main blur toggle in popup"
+  },
+  "pinnedToggleHint": {
+    "message": "Sabitlenmiş sohbetleri her zaman görünür tut",
+    "description": "Hint text for pinned chats toggle in popup"
+  },
+  "popupFooter": {
+    "message": "Değişiklikler otomatik olarak kaydedilir",
+    "description": "Footer text in popup"
   }
 }

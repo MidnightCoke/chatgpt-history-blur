@@ -26,5 +26,25 @@
   "blurAmount": {
     "message": "模糊程度",
     "description": "Label for blur amount slider in popup"
+  },
+  "popupSubtitle": {
+    "message": "用于侧边栏聊天的隐私控制",
+    "description": "Subtitle in popup"
+  },
+  "language": {
+    "message": "语言",
+    "description": "Language selector label in popup"
+  },
+  "popupToggleHint": {
+    "message": "在悬停之前模糊侧边栏聊天",
+    "description": "Hint text for main blur toggle in popup"
+  },
+  "pinnedToggleHint": {
+    "message": "让置顶聊天始终保持可见",
+    "description": "Hint text for pinned chats toggle in popup"
+  },
+  "popupFooter": {
+    "message": "更改会自动保存",
+    "description": "Footer text in popup"
   }
 }

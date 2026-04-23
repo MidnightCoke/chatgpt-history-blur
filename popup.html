@@ -2,69 +2,256 @@
 <html>
   <head>
     <meta charset="UTF-8" />
+    <title>Blur ChatGPT History</title>
     <style>
-      body {
-        font-family: sans-serif;
-        padding: 10px;
-        width: 200px;
+      * {
+        box-sizing: border-box;
       }
 
-      .box {
+      :root {
+        color-scheme: dark;
+      }
+
+      body {
+        margin: 0;
+        padding: 14px;
+        width: 290px;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        background: #0f172a;
+        color: #e5e7eb;
+      }
+
+      .card {
+        background: linear-gradient(180deg, #111827 0%, #0b1220 100%);
+        border: 1px solid #1f2937;
+        border-radius: 16px;
+        padding: 14px;
+        box-shadow:
+          0 10px 30px rgba(0, 0, 0, 0.25),
+          inset 0 1px 0 rgba(255, 255, 255, 0.02);
+      }
+
+      .title {
+        font-size: 15px;
+        font-weight: 700;
+        margin: 0 0 4px 0;
+        color: #f9fafb;
+      }
+
+      .subtitle {
+        font-size: 12px;
+        color: #9ca3af;
+        margin: 0 0 14px 0;
+      }
+
+      .section {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .row {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        margin-bottom: 12px;
+        padding: 10px 12px;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.02);
       }
 
-      span {
-        align-items: center;
-        gap: 8px;
+      .row-left {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+        flex: 1;
+      }
+
+      .label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #f3f4f6;
+      }
+
+      .hint {
+        font-size: 11px;
+        color: #9ca3af;
+        line-height: 1.35;
+      }
+
+      .language-block {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .language-label {
+        font-size: 12px;
+        color: #cbd5e1;
+        font-weight: 600;
+      }
+
+      select {
+        width: 100%;
+        padding: 9px 10px;
+        border-radius: 10px;
+        border: 1px solid #334155;
+        background: #0f172a;
+        color: #f8fafc;
+        font-size: 13px;
+        outline: none;
         cursor: pointer;
       }
 
-      .language-box {
+      select:focus {
+        border-color: #60a5fa;
+        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
+      }
+
+      .slider-row {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 10px 12px;
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .slider-top {
         display: flex;
         align-items: center;
+        justify-content: space-between;
         gap: 8px;
-        margin-bottom: 16px;
       }
 
-      #languageSelect {
-        padding: 4px;
-        border-radius: 4px;
-        border: 1px solid #ccc;
+      .slider-value {
         font-size: 12px;
+        font-weight: 700;
+        color: #93c5fd;
+        white-space: nowrap;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: #60a5fa;
         cursor: pointer;
+      }
+
+      .footer {
+        margin-top: 12px;
+        font-size: 11px;
+        text-align: center;
+        color: #6b7280;
+      }
+
+      .switch {
+        position: relative;
+        width: 42px;
+        height: 24px;
+        flex-shrink: 0;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        inset: 0;
+        cursor: pointer;
+        background-color: #374151;
+        border-radius: 999px;
+        transition: 0.2s ease;
+      }
+
+      .slider::before {
+        content: "";
+        position: absolute;
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        top: 3px;
+        background-color: white;
+        border-radius: 50%;
+        transition: 0.2s ease;
+      }
+
+      .switch input:checked + .slider {
+        background-color: #2563eb;
+      }
+
+      .switch input:checked + .slider::before {
+        transform: translateX(18px);
       }
     </style>
   </head>
   <body>
-    <div class="language-box">
-      <label for="languageSelect" style="font-size: 12px">Language:</label>
-      <select id="languageSelect">
-        <option value="en">English</option>
-        <option value="es">Español</option>
-        <option value="fr">Français</option>
-        <option value="de">Deutsch</option>
-        <option value="ja">日本語</option>
-        <option value="zh_CN">中文</option>
-        <option value="tr">Türkçe</option>
-      </select>
-    </div>
-    <div class="box">
-      <span id="popupLabel">Blur ChatGPT History </span>
-      <input type="checkbox" id="toggle" />
-    </div>
-    <div class="box">
-      <span id="pinnedLabel">Show pinned chats</span>
-      <input type="checkbox" id="pinnedToggle" />
-    </div>
-    <div class="box" style="flex-direction: column; align-items: flex-start; gap: 4px;">
-      <span id="blurAmountLabel" style="font-size: 12px;"></span>
-      <input type="range" id="blurAmount" min="0.5" max="10" step="0.5" value="3.5" style="width: 100%;" />
+    <div class="card">
+      <h1 class="title" id="popupTitle">Blur ChatGPT History</h1>
+      <p class="subtitle" id="popupSubtitle">Privacy controls for your sidebar chats</p>
+
+      <div class="section">
+        <div class="language-block">
+          <label for="languageSelect" class="language-label" id="languageLabel">Language</label>
+          <select id="languageSelect">
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+            <option value="ja">日本語</option>
+            <option value="zh_CN">中文</option>
+            <option value="tr">Türkçe</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <div class="row-left">
+            <span class="label" id="popupLabel">Blur ChatGPT History</span>
+            <span class="hint" id="popupToggleHint">Blur sidebar chats until you hover them</span>
+          </div>
+
+          <label class="switch">
+            <input type="checkbox" id="toggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="row">
+          <div class="row-left">
+            <span class="label" id="pinnedLabel">Show pinned chats</span>
+            <span class="hint" id="pinnedHint">Keep pinned chats always visible</span>
+          </div>
+
+          <label class="switch">
+            <input type="checkbox" id="pinnedToggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="slider-row">
+          <span class="label" id="blurAmountLabel" style="font-size: 12px;"></span>
+          <input
+            type="range"
+            id="blurAmount"
+            min="0.5"
+            max="10"
+            step="0.5"
+            value="3.5"
+          />
+        </div>
+      </div>
+
+      <div class="footer" id="footerText">Changes are saved automatically</div>
     </div>
 
     <script src="popup.js"></script>
+    <script src="popup-i18n.js"></script>
   </body>
 </html>

@@ -26,5 +26,25 @@
   "blurAmount": {
     "message": "Niveau de flou",
     "description": "Label for blur amount slider in popup"
+  },
+  "popupSubtitle": {
+    "message": "Contrôles de confidentialité pour vos discussions de la barre latérale",
+    "description": "Subtitle in popup"
+  },
+  "language": {
+    "message": "Langue",
+    "description": "Language selector label in popup"
+  },
+  "popupToggleHint": {
+    "message": "Floute les discussions de la barre latérale jusqu'au survol",
+    "description": "Hint text for main blur toggle in popup"
+  },
+  "pinnedToggleHint": {
+    "message": "Gardez les discussions épinglées toujours visibles",
+    "description": "Hint text for pinned chats toggle in popup"
+  },
+  "popupFooter": {
+    "message": "Les modifications sont enregistrées automatiquement",
+    "description": "Footer text in popup"
   }
 }

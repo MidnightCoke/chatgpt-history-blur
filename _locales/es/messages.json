@@ -26,5 +26,25 @@
   "blurAmount": {
     "message": "Cantidad de desenfoque",
     "description": "Label for blur amount slider in popup"
+  },
+  "popupSubtitle": {
+    "message": "Controles de privacidad para tus chats de la barra lateral",
+    "description": "Subtitle in popup"
+  },
+  "language": {
+    "message": "Idioma",
+    "description": "Language selector label in popup"
+  },
+  "popupToggleHint": {
+    "message": "Desenfoca los chats de la barra lateral hasta que pases el cursor",
+    "description": "Hint text for main blur toggle in popup"
+  },
+  "pinnedToggleHint": {
+    "message": "Mantén los chats fijados siempre visibles",
+    "description": "Hint text for pinned chats toggle in popup"
+  },
+  "popupFooter": {
+    "message": "Los cambios se guardan automáticamente",
+    "description": "Footer text in popup"
   }
 }

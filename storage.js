@@ -72,5 +72,5 @@ const storage = {
     } catch {
       // Extension context invalidated
     }
-  }
+  },
 };
