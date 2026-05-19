@@ -6,7 +6,7 @@ const SELECTORS = {
   history: "#history",
   historyItems: '#history a[href^="/c/"]',
   pinnedIndicators:
-    '[data-testid*="pin"], [aria-label*="Pin"], [aria-label*="Pinned"]',
+    '[data-testid*="pin"], [aria-label*="pin" i], [aria-label*="pinned" i]',
   toggleWrapper: ".blur-toggle-wrapper",
   toggleText: ".blur-toggle-text",
   toggleScrollSlot: ".blur-toggle-scroll-slot",
@@ -65,10 +65,9 @@ function isPinnedChatItem(item) {
   const row = item.closest("li, div, a");
   if (!row) return false;
 
-  const text = row.textContent?.toLowerCase() || "";
-
   return (
-    text.includes("pinned") || !!row.querySelector(SELECTORS.pinnedIndicators)
+    row.matches(SELECTORS.pinnedIndicators) ||
+    !!row.querySelector(SELECTORS.pinnedIndicators)
   );
 }
 
